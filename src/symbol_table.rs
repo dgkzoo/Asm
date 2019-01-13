@@ -7,7 +7,7 @@
 use std::collections::HashMap;
 
 pub struct SymbolTable {
-    pub symbol_map:HashMap<String, String>,
+    symbol_map:HashMap<String, String>,
 }
 
 impl SymbolTable {
