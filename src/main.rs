@@ -1,9 +1,9 @@
-/**
- * ## アセンブラ・メイン
- *
- * ## author
- * dgkzoo
- */
+///
+/// ## アセンブラ・メイン
+///
+/// ## author
+/// dgkzoo
+///
 use std::env;
 extern crate asm;
 use asm::assembler::Assembler;

@@ -1,9 +1,9 @@
-/**
- * ## Parser
- *
- * ## author
- * dgkzoo
- */
+///
+/// ## Parser
+///
+/// ## author
+/// dgkzoo
+///
 use std::fs::File;
 
 pub struct Parser {
@@ -17,9 +17,9 @@ impl Parser {
         }
     }
 
-    /**
-     * ファイルにコマンドが存在するか返す
-     */
+    ///
+    /// ファイルにコマンドが存在するか返す
+    ///
     pub fn has_more_commands() -> bool {
         return true;
     }

@@ -1,9 +1,9 @@
-/**
- * ## シンボルテーブル
- *
- * ## author
- * dgkzoo
- */
+///
+/// ## シンボルテーブル
+///
+/// ## author
+/// dgkzoo
+///
 use std::collections::HashMap;
 
 pub struct SymbolTable {
