@@ -55,4 +55,12 @@ impl Parser {
 
         return L_COMMAND;
     }
+
+    pub fn get_symbol(&self, line: String) -> String{
+        if line.contains("@") {
+            return line.replace("@", "");
+        }
+
+        return line;
+    }
 }

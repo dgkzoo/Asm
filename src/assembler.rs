@@ -30,7 +30,7 @@ impl Assembler {
     /// アセンブルの実行
     /// 
     pub fn exec(&self, filepath:String, st:SymbolTable) {
-        let mut parser = Parser::new();
+        let parser = Parser::new();
 
         let file = fs::File::open(filepath.to_string()).unwrap();
         let reader = BufReader::new(file);
@@ -42,8 +42,14 @@ impl Assembler {
             }
 
             // コマンドタイプの取得
-            let command_type = parser.get_command_type(line);
+            let command_type = parser.get_command_type(line.to_string());
             println!("{}", command_type.to_string());
+
+            // シンボルの取得
+            if command_type == parser::A_COMMAND || command_type == parser::L_COMMAND {
+                let symbol = parser.get_symbol(line.to_string());
+                println!("{}", symbol.to_string());
+            }
         }
     }
 }
