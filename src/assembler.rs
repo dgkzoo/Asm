@@ -11,6 +11,9 @@ pub struct Assembler {
 }
 
 impl Assembler {
+    pub fn new() -> Assembler {
+        Assembler {}
+    }
 
     ///
     /// シンボルテーブルを作成する
@@ -23,7 +26,8 @@ impl Assembler {
     ///
     /// アセンブルの実行
     /// 
-    pub fn exec(&self, filepath:String, st:SymbolTable) {
-        let parser = Parser::new(filepath.to_string());
+    pub fn exec(&self, mut filepath:String, st:SymbolTable) {
+        let parser = Parser::new(filepath);
+        parser.advance();
     }
 }

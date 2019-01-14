@@ -22,7 +22,7 @@ fn main() {
     let filepath = "./test/add/Add.asm";
     println!("filepath = {}", filepath);
 
-    let assembler = Assembler {};
+    let assembler = Assembler::new();
     let st = assembler.create_symbol_tble(filepath.to_string());
     assembler.exec(filepath.to_string(), st);
 }
