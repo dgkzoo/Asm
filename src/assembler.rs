@@ -4,7 +4,10 @@
 /// ## author
 /// dgkzoo
 ///
+use std::io::{BufReader, BufRead};
+use std::fs;
 use symbol_table::SymbolTable;
+use parser;
 use parser::Parser;
 
 pub struct Assembler {
@@ -26,8 +29,21 @@ impl Assembler {
     ///
     /// アセンブルの実行
     /// 
-    pub fn exec(&self, mut filepath:String, st:SymbolTable) {
-        let parser = Parser::new(filepath);
-        parser.advance();
+    pub fn exec(&self, filepath:String, st:SymbolTable) {
+        let mut parser = Parser::new();
+
+        let file = fs::File::open(filepath.to_string()).unwrap();
+        let reader = BufReader::new(file);
+        for line in reader.lines() {
+            // コメント、空白行などを除去
+            let line = parser.get_valid_line(line.unwrap());
+            if line.is_empty() {
+                continue;
+            }
+
+            // コマンドタイプの取得
+            let command_type = parser.get_command_type(line);
+            println!("{}", command_type.to_string());
+        }
     }
 }

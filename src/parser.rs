@@ -4,32 +4,55 @@
 /// ## author
 /// dgkzoo
 ///
-use std::fs;
-use std::io::{BufReader, BufRead};
+// use std::fs;
+// use std::io::{Read, BufReader, BufRead};
 
+pub const A_COMMAND: &str = "A";
+pub const C_COMMAND: &str = "C";
+pub const L_COMMAND: &str = "L";
+
+///
+/// パーサ
+/// 
 pub struct Parser {
-    filepath:String,
-    curent_line:String,
 }
 
 impl Parser {
-    pub fn new(filepath:String) -> Parser {
+    pub fn new() -> Parser {
         Parser {
-            filepath: filepath,
-            curent_line: "".to_string(),
         }
     }
 
     ///
-    /// １ファイルをアセンブルする
-    ///
-    pub fn advance(&self) -> bool {
-        let file = fs::File::open(self.filepath.to_string()).unwrap();
-        let reader = BufReader::new(file);
-        for line in reader.lines() {
-            println!("{}", line.unwrap()); // 改行は含まない
+    /// 空白行、コメントの場合、ブランク文字列を返す
+    /// 
+    pub fn get_valid_line(&self, line: String) -> String{
+        let line = line.trim().to_string();
+
+        if line.is_empty() {
+            return "".to_string();
+        }
+        if line.starts_with("//") {
+            return "".to_string();
         }
 
-        return true;
+        return line;
+    }
+
+    ///
+    /// コマンドタイプを返す
+    /// 
+    pub fn get_command_type(&self, line: String) -> &str{
+        if line.starts_with("@") {
+            return A_COMMAND;
+        }
+        if line.contains("=") {
+            return C_COMMAND;
+        }
+        if line.contains(";") {
+            return C_COMMAND;
+        }
+
+        return L_COMMAND;
     }
 }
