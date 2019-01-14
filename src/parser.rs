@@ -57,10 +57,24 @@ impl Parser {
     }
 
     pub fn get_symbol(&self, line: String) -> String{
+        let line = line.trim().to_string();
         if line.contains("@") {
             return line.replace("@", "");
         }
 
         return line;
+    }
+
+    ///
+    /// C命令のdestニーモニックを返す
+    /// 
+    pub fn get_dest(&self, line: String) -> String {
+        let line = line.trim().to_string();
+        let sep:Vec<&str> = line.split("=").collect();
+        if sep.len() == 2 {
+            return sep.get(0).unwrap().to_string();
+        }
+
+        return "".to_string();
     }
 }

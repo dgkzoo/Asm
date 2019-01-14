@@ -43,13 +43,15 @@ impl Assembler {
 
             // コマンドタイプの取得
             let command_type = parser.get_command_type(line.to_string());
-            println!("{}", command_type.to_string());
 
             // シンボルの取得
+            let mut symbol:String = "".to_string();
             if command_type == parser::A_COMMAND || command_type == parser::L_COMMAND {
-                let symbol = parser.get_symbol(line.to_string());
-                println!("{}", symbol.to_string());
+                symbol = parser.get_symbol(line.to_string());
             }
+
+            let dest = parser.get_dest(line.to_string());
+            println!("{} com:{} dest:{} sym:{}", line.to_string(), command_type, dest.to_string(), symbol.to_string());
         }
     }
 }
