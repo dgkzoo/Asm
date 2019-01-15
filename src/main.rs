@@ -19,10 +19,9 @@ fn main() {
     // asmファイル
     let args: Vec<String> = env::args().collect();
 //    let filepath = &args[1];
-    let filepath = "./test/add/Add.asm";
+    let filepath = "./test/max/Max.asm";
     println!("filepath = {}", filepath);
 
     let assembler = Assembler::new();
-    let st = assembler.create_symbol_tble(filepath.to_string());
-    assembler.exec(filepath.to_string(), st);
+    assembler.exec(filepath.to_string());
 }

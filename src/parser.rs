@@ -27,13 +27,18 @@ impl Parser {
     /// 空白行、コメントの場合、ブランク文字列を返す
     /// 
     pub fn get_valid_line(&self, line: String) -> String{
-        let line = line.trim().to_string();
+        let mut line = line.trim().to_string();
 
         if line.is_empty() {
             return "".to_string();
         }
         if line.starts_with("//") {
             return "".to_string();
+        }
+
+        if line.contains("//") {
+            let sep:Vec<&str> = line.split("//").collect();
+            return sep.get(0).unwrap().to_string();
         }
 
         return line;
@@ -73,6 +78,34 @@ impl Parser {
         let sep:Vec<&str> = line.split("=").collect();
         if sep.len() == 2 {
             return sep.get(0).unwrap().to_string();
+        }
+
+        return "".to_string();
+    }
+
+    ///
+    /// C命令のcompニーモニックを返す
+    /// 
+    pub fn get_comp(&self, line: String) -> String {
+        let line = line.trim().to_string();
+        let sep:Vec<&str> = line.split("=").collect();
+        if sep.len() == 2 {
+            return sep.get(1).unwrap().to_string();
+        }
+
+        let comp_sep:Vec<&str> = line.split(";").collect();
+        if comp_sep.len() == 2 {
+            return comp_sep.get(0).unwrap().to_string();
+        }
+
+        return "".to_string();
+    }
+
+    pub fn get_jmp(&self, line: String) -> String {
+        let line = line.trim().to_string();
+        let sep:Vec<&str> = line.split(";").collect();
+        if sep.len() == 2 {
+            return sep.get(1).unwrap().to_string();
         }
 
         return "".to_string();

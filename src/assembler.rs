@@ -21,7 +21,7 @@ impl Assembler {
     ///
     /// シンボルテーブルを作成する
     /// 
-    pub fn create_symbol_tble(&self, _filepath:String) -> SymbolTable{
+    fn create_symbol_tble(&self, _filepath:String) -> SymbolTable{
         let st = SymbolTable:: new();
         return st;
     }
@@ -29,7 +29,9 @@ impl Assembler {
     ///
     /// アセンブルの実行
     /// 
-    pub fn exec(&self, filepath:String, st:SymbolTable) {
+    pub fn exec(&self, filepath:String) {
+        let st = self.create_symbol_tble(filepath.to_string());
+
         let parser = Parser::new();
 
         let file = fs::File::open(filepath.to_string()).unwrap();
@@ -50,8 +52,14 @@ impl Assembler {
                 symbol = parser.get_symbol(line.to_string());
             }
 
+            // dest=comp;jmp の取得
             let dest = parser.get_dest(line.to_string());
-            println!("{} com:{} dest:{} sym:{}", line.to_string(), command_type, dest.to_string(), symbol.to_string());
+            let comp = parser.get_comp(line.to_string());
+            let jmp = parser.get_jmp(line.to_string());
+
+
+            println!("{} com:{} dest:{} comp:{} jmp:{} sym:{}",
+                line.to_string(), command_type, dest.to_string(), comp.to_string(), jmp.to_string(), symbol.to_string());
         }
     }
 }
