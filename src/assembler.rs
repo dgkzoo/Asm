@@ -31,7 +31,10 @@ impl Assembler {
     /// 
     pub fn exec(&self, filepath:String) {
         let st = self.create_symbol_tble(filepath.to_string());
+        self.assemble(filepath.to_string());
+    }
 
+    fn assemble(&self, filepath:String) {
         let parser = Parser::new();
 
         let file = fs::File::open(filepath.to_string()).unwrap();
