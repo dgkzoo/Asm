@@ -6,27 +6,24 @@
 ///
 // use std::fs;
 // use std::io::{Read, BufReader, BufRead};
-
 pub const A_COMMAND: &str = "A";
 pub const C_COMMAND: &str = "C";
 pub const L_COMMAND: &str = "L";
 
 ///
 /// パーサ
-/// 
-pub struct Parser {
-}
+///
+pub struct Parser {}
 
 impl Parser {
     pub fn new() -> Parser {
-        Parser {
-        }
+        Parser {}
     }
 
     ///
     /// 空白行、コメントの場合、ブランク文字列を返す
-    /// 
-    pub fn get_valid_line(&self, line: String) -> String{
+    ///
+    pub fn get_valid_line(&self, line: &mut String) -> String {
         let mut line = line.trim().to_string();
 
         if line.is_empty() {
@@ -37,17 +34,18 @@ impl Parser {
         }
 
         if line.contains("//") {
-            let sep:Vec<&str> = line.split("//").collect();
-            return sep.get(0).unwrap().to_string();
+            let comment_line = line;
+            let sep: Vec<&str> = comment_line.split("//").collect();
+            line = sep.get(0).unwrap().to_string();
         }
 
-        return line;
+        return line.trim().to_string();
     }
 
     ///
     /// コマンドタイプを返す
-    /// 
-    pub fn get_command_type(&self, line: String) -> &str{
+    ///
+    pub fn get_command_type(&self, line: String) -> &str {
         if line.starts_with("@") {
             return A_COMMAND;
         }
@@ -61,10 +59,13 @@ impl Parser {
         return L_COMMAND;
     }
 
-    pub fn get_symbol(&self, line: String) -> String{
+    pub fn get_symbol(&self, line: String) -> String {
         let line = line.trim().to_string();
         if line.contains("@") {
             return line.replace("@", "");
+        }
+        if line.contains("(") {
+            return line.replace("(|)", "");
         }
 
         return line;
@@ -72,10 +73,10 @@ impl Parser {
 
     ///
     /// C命令のdestニーモニックを返す
-    /// 
+    ///
     pub fn get_dest(&self, line: String) -> String {
         let line = line.trim().to_string();
-        let sep:Vec<&str> = line.split("=").collect();
+        let sep: Vec<&str> = line.split("=").collect();
         if sep.len() == 2 {
             return sep.get(0).unwrap().to_string();
         }
@@ -85,15 +86,15 @@ impl Parser {
 
     ///
     /// C命令のcompニーモニックを返す
-    /// 
+    ///
     pub fn get_comp(&self, line: String) -> String {
         let line = line.trim().to_string();
-        let sep:Vec<&str> = line.split("=").collect();
+        let sep: Vec<&str> = line.split("=").collect();
         if sep.len() == 2 {
             return sep.get(1).unwrap().to_string();
         }
 
-        let comp_sep:Vec<&str> = line.split(";").collect();
+        let comp_sep: Vec<&str> = line.split(";").collect();
         if comp_sep.len() == 2 {
             return comp_sep.get(0).unwrap().to_string();
         }
@@ -103,7 +104,7 @@ impl Parser {
 
     pub fn get_jmp(&self, line: String) -> String {
         let line = line.trim().to_string();
-        let sep:Vec<&str> = line.split(";").collect();
+        let sep: Vec<&str> = line.split(";").collect();
         if sep.len() == 2 {
             return sep.get(1).unwrap().to_string();
         }

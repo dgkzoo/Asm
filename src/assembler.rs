@@ -1,3 +1,4 @@
+use code::Code;
 use parser;
 use parser::Parser;
 use std::fs;
@@ -12,11 +13,13 @@ use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::path::Path;
 use symbol_table::SymbolTable;
 
-pub struct Assembler {}
+pub struct Assembler {
+    ram_addr: u16,
+}
 
 impl Assembler {
     pub fn new() -> Assembler {
-        Assembler {}
+        Assembler { ram_addr: 0x0010 }
     }
 
     ///
@@ -30,7 +33,7 @@ impl Assembler {
     ///
     /// アセンブルの実行
     ///
-    pub fn exec(&self, filepath: String) {
+    pub fn exec(&mut self, filepath: String) {
         let infilepath = filepath.to_string();
         let inpath = Path::new(&infilepath);
         let outfilepath = String::from(
@@ -40,20 +43,27 @@ impl Assembler {
                 .unwrap(),
         );
 
+        // シンボルテーブルの作成
         let st = self.create_symbol_tble(infilepath.to_string());
-        self.assemble(infilepath.to_string(), outfilepath);
+
+        // アセンブルの実行
+        self.assemble(st, infilepath.to_string(), outfilepath);
     }
 
-    fn assemble(&self, filepath: String, outfilepath: String) {
+    ///
+    /// アセンブル
+    ///
+    fn assemble(&mut self, mut st: SymbolTable, filepath: String, outfilepath: String) {
         let parser = Parser::new();
+        let code = Code::new();
 
         let infile = fs::File::open(filepath.to_string()).unwrap();
-        let mut out_buf = BufWriter::new(fs::File::create(outfilepath).unwrap());
+        let mut out_buf = BufWriter::new(fs::File::create(outfilepath + ".code").unwrap());
 
         let reader = BufReader::new(infile);
         for line in reader.lines() {
             // コメント、空白行などを除去
-            let line = parser.get_valid_line(line.unwrap());
+            let line = parser.get_valid_line(&mut line.unwrap());
             if line.is_empty() {
                 continue;
             }
@@ -67,20 +77,41 @@ impl Assembler {
                 symbol = parser.get_symbol(line.to_string());
             }
 
-            // dest=comp;jmp の取得
-            let dest = parser.get_dest(line.to_string());
-            let comp = parser.get_comp(line.to_string());
-            let jmp = parser.get_jmp(line.to_string());
+            let mut out_code = "".to_string();
 
-            let out_code = format!(
-                "{} com:{} dest:{} comp:{} jmp:{} sym:{}\n",
-                line.to_string(),
-                command_type,
-                dest.to_string(),
-                comp.to_string(),
-                jmp.to_string(),
-                symbol.to_string()
-            );
+            // A命令
+            if command_type == parser::A_COMMAND {
+                let mut address;
+                if symbol.parse::<u16>().is_ok() {
+                    address = symbol.parse::<u16>().unwrap();
+                } else {
+                    if st.contains(&symbol) {
+                        address = *st.get_address(symbol);
+                    } else {
+                        st.add_entry(symbol, self.ram_addr);
+                        address = self.ram_addr;
+                        self.ram_addr += 1;
+                    }
+                }
+
+                out_code = format!("{:0>16b} //{}\n", address, line.to_string());
+            }
+
+            // C命令
+            if command_type == parser::C_COMMAND {
+                // dest=comp;jmp の取得
+                let comp = parser.get_comp(line.to_string());
+                let dest = parser.get_dest(line.to_string());
+                let jump = parser.get_jmp(line.to_string());
+
+                let comp_code = code.comp(comp.to_string());
+                let dest_code = code.dest(dest.to_string());
+                let jump_code = code.jump(jump.to_string());
+
+                let code_val = (7 << 13) | (comp_code << 6) | (dest_code << 3) | jump_code;
+
+                out_code = format!("{:0>16b} //{}\n", code_val, line.to_string());
+            }
 
             print!("{}", out_code);
             out_buf.write(out_code.as_bytes()).unwrap();
