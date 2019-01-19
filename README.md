@@ -1,5 +1,7 @@
-this is work.
 
-# 1. 実行方法
+
+# 1. run
+```
 cd project-root
-cargo run
+cargo run xxx.asm
+```
