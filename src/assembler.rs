@@ -8,7 +8,7 @@ use std::fs;
 /// ## author
 /// dgkzoo
 ///
-use std::io::{BufRead, BufReader};
+use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::path::Path;
 use symbol_table::SymbolTable;
 
@@ -33,7 +33,12 @@ impl Assembler {
     pub fn exec(&self, filepath: String) {
         let infilepath = filepath.to_string();
         let inpath = Path::new(&infilepath);
-        let outfilepath = String::from(inpath.file_stem().unwrap().to_str().unwrap());
+        let outfilepath = String::from(
+            inpath
+                .with_file_name(inpath.file_stem().unwrap())
+                .to_str()
+                .unwrap(),
+        );
 
         let st = self.create_symbol_tble(infilepath.to_string());
         self.assemble(infilepath.to_string(), outfilepath);
@@ -42,8 +47,10 @@ impl Assembler {
     fn assemble(&self, filepath: String, outfilepath: String) {
         let parser = Parser::new();
 
-        let file = fs::File::open(filepath.to_string()).unwrap();
-        let reader = BufReader::new(file);
+        let infile = fs::File::open(filepath.to_string()).unwrap();
+        let mut out_buf = BufWriter::new(fs::File::create(outfilepath).unwrap());
+
+        let reader = BufReader::new(infile);
         for line in reader.lines() {
             // コメント、空白行などを除去
             let line = parser.get_valid_line(line.unwrap());
@@ -65,8 +72,8 @@ impl Assembler {
             let comp = parser.get_comp(line.to_string());
             let jmp = parser.get_jmp(line.to_string());
 
-            println!(
-                "{} com:{} dest:{} comp:{} jmp:{} sym:{}",
+            let out_code = format!(
+                "{} com:{} dest:{} comp:{} jmp:{} sym:{}\n",
                 line.to_string(),
                 command_type,
                 dest.to_string(),
@@ -74,6 +81,9 @@ impl Assembler {
                 jmp.to_string(),
                 symbol.to_string()
             );
+
+            print!("{}", out_code);
+            out_buf.write(out_code.as_bytes()).unwrap();
         }
     }
 }
