@@ -82,12 +82,16 @@ impl Assembler {
             // A命令
             if command_type == parser::A_COMMAND {
                 let mut address;
+
+                // 数値はそのままアドレス
                 if symbol.parse::<u16>().is_ok() {
                     address = symbol.parse::<u16>().unwrap();
                 } else {
+                    // シンボルテーブルに存在したらアドレスをもらう
                     if st.contains(&symbol) {
                         address = *st.get_address(symbol);
                     } else {
+                        // シンボル登録
                         st.add_entry(symbol, self.ram_addr);
                         address = self.ram_addr;
                         self.ram_addr += 1;
@@ -104,16 +108,17 @@ impl Assembler {
                 let dest = parser.get_dest(line.to_string());
                 let jump = parser.get_jmp(line.to_string());
 
+                // dest=comp;jmp をコード化
                 let comp_code = code.comp(comp.to_string());
                 let dest_code = code.dest(dest.to_string());
                 let jump_code = code.jump(jump.to_string());
-
                 let code_val = (7 << 13) | (comp_code << 6) | (dest_code << 3) | jump_code;
 
                 out_code = format!("{:0>16b} //{}\n", code_val, line.to_string());
             }
 
-            print!("{}", out_code);
+            // ファイルに出力
+            //print!("{}", out_code);
             out_buf.write(out_code.as_bytes()).unwrap();
         }
     }

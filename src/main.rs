@@ -21,6 +21,7 @@ fn main() {
     //    let filepath = "./test/counter/counter.asm";
     println!("filepath = {}", filepath);
 
+    // アセンブル
     let mut assembler = Assembler::new();
     assembler.exec(filepath.to_string());
 }

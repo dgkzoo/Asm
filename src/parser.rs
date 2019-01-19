@@ -59,6 +59,9 @@ impl Parser {
         return L_COMMAND;
     }
 
+    ///
+    /// シンボルを抽出する
+    ///
     pub fn get_symbol(&self, line: String) -> String {
         let line = line.trim().to_string();
         if line.contains("@") {
@@ -102,6 +105,9 @@ impl Parser {
         return "".to_string();
     }
 
+    ///
+    /// C命令のjumpニーモニックを返す
+    ///
     pub fn get_jmp(&self, line: String) -> String {
         let line = line.trim().to_string();
         let sep: Vec<&str> = line.split(";").collect();
