@@ -1,17 +1,18 @@
+use parser;
+use parser::Parser;
+use std::fs;
+
 ///
 /// ## アセンブラ
 ///
 /// ## author
 /// dgkzoo
 ///
-use std::io::{BufReader, BufRead};
-use std::fs;
+use std::io::{BufRead, BufReader};
+use std::path::Path;
 use symbol_table::SymbolTable;
-use parser;
-use parser::Parser;
 
-pub struct Assembler {
-}
+pub struct Assembler {}
 
 impl Assembler {
     pub fn new() -> Assembler {
@@ -20,21 +21,25 @@ impl Assembler {
 
     ///
     /// シンボルテーブルを作成する
-    /// 
-    fn create_symbol_tble(&self, _filepath:String) -> SymbolTable{
-        let st = SymbolTable:: new();
+    ///
+    fn create_symbol_tble(&self, _filepath: String) -> SymbolTable {
+        let st = SymbolTable::new();
         return st;
     }
 
     ///
     /// アセンブルの実行
-    /// 
-    pub fn exec(&self, filepath:String) {
-        let st = self.create_symbol_tble(filepath.to_string());
-        self.assemble(filepath.to_string());
+    ///
+    pub fn exec(&self, filepath: String) {
+        let infilepath = filepath.to_string();
+        let inpath = Path::new(&infilepath);
+        let outfilepath = String::from(inpath.file_stem().unwrap().to_str().unwrap());
+
+        let st = self.create_symbol_tble(infilepath.to_string());
+        self.assemble(infilepath.to_string(), outfilepath);
     }
 
-    fn assemble(&self, filepath:String) {
+    fn assemble(&self, filepath: String, outfilepath: String) {
         let parser = Parser::new();
 
         let file = fs::File::open(filepath.to_string()).unwrap();
@@ -50,7 +55,7 @@ impl Assembler {
             let command_type = parser.get_command_type(line.to_string());
 
             // シンボルの取得
-            let mut symbol:String = "".to_string();
+            let mut symbol: String = "".to_string();
             if command_type == parser::A_COMMAND || command_type == parser::L_COMMAND {
                 symbol = parser.get_symbol(line.to_string());
             }
@@ -60,9 +65,15 @@ impl Assembler {
             let comp = parser.get_comp(line.to_string());
             let jmp = parser.get_jmp(line.to_string());
 
-
-            println!("{} com:{} dest:{} comp:{} jmp:{} sym:{}",
-                line.to_string(), command_type, dest.to_string(), comp.to_string(), jmp.to_string(), symbol.to_string());
+            println!(
+                "{} com:{} dest:{} comp:{} jmp:{} sym:{}",
+                line.to_string(),
+                command_type,
+                dest.to_string(),
+                comp.to_string(),
+                jmp.to_string(),
+                symbol.to_string()
+            );
         }
     }
 }

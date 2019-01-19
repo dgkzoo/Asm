@@ -18,7 +18,7 @@ fn main() {
 
     // asmファイル
     let args: Vec<String> = env::args().collect();
-//    let filepath = &args[1];
+    //    let filepath = &args[1];
     let filepath = "./test/max/Max.asm";
     println!("filepath = {}", filepath);
 
