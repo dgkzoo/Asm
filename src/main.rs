@@ -7,7 +7,6 @@
 use std::env;
 extern crate asm;
 use asm::assembler::Assembler;
-use asm::symbol_table::SymbolTable;
 
 fn main() {
     // 引数チェック
@@ -18,8 +17,8 @@ fn main() {
 
     // asmファイル
     let args: Vec<String> = env::args().collect();
-    //    let filepath = &args[1];
-    let filepath = "./test/rect/Rect.asm";
+    let filepath = &args[1];
+    //    let filepath = "./test/counter/counter.asm";
     println!("filepath = {}", filepath);
 
     let mut assembler = Assembler::new();
