@@ -1,7 +1,9 @@
 use code::Code;
 use parser;
 use parser::Parser;
+use std::borrow::Cow;
 use std::fs;
+use std::fs::DirEntry;
 
 ///
 /// ## アセンブラ
@@ -10,7 +12,8 @@ use std::fs;
 /// dgkzoo
 ///
 use std::io::{BufRead, BufReader, BufWriter, Write};
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use std::string::ToString;
 use symbol_table::SymbolTable;
 
 pub struct Assembler {
@@ -35,19 +38,50 @@ impl Assembler {
     ///
     pub fn exec(&mut self, filepath: String) {
         let infilepath = filepath.to_string();
-        let inpath = Path::new(&infilepath);
-        let outfilepath = String::from(
-            inpath
-                .with_file_name(inpath.file_stem().unwrap())
-                .to_str()
-                .unwrap(),
-        );
 
-        // シンボルテーブルの作成
-        let st = self.create_symbol_tble(infilepath.to_string());
+        let file_list = self.get_file_list(&infilepath);
+        for asm_file_path in file_list {
+            let inpath = Path::new(&asm_file_path);
+            let mut outfilepath = String::from(
+                inpath
+                    .with_file_name(inpath.file_stem().unwrap())
+                    .to_str()
+                    .unwrap(),
+            );
+            outfilepath = outfilepath + ".code";
 
-        // アセンブルの実行
-        self.assemble(st, infilepath.to_string(), outfilepath);
+            // シンボルテーブルの作成
+            let st = self.create_symbol_tble(infilepath.to_string());
+
+            // アセンブルの実行
+            //println!("assemble={} {}", asm_file_path.to_string(), outfilepath);
+            self.assemble(st, asm_file_path.to_string(), outfilepath);
+        }
+    }
+
+    fn get_file_list(&self, inpath_str: &str) -> Vec<String> {
+        let mut vec: Vec<String> = vec![];
+        let inpath = Path::new(inpath_str);
+
+        // ファイル指定
+        if !inpath.is_dir() {
+            vec.push(String::from(inpath.to_str().unwrap()));
+            return vec;
+        }
+
+        // ディレクトリ指定
+        let paths = fs::read_dir(inpath_str).unwrap();
+        for path in paths {
+            let path = path.unwrap().path();
+            let ext = path.extension().unwrap().to_str().unwrap();
+            if "asm" != ext {
+                continue;
+            }
+
+            let asm_path = path.display().to_string();
+            vec.push(asm_path.to_string());
+        }
+        return vec;
     }
 
     ///
@@ -58,7 +92,7 @@ impl Assembler {
         let code = Code::new();
 
         let infile = fs::File::open(filepath.to_string()).unwrap();
-        let mut out_buf = BufWriter::new(fs::File::create(outfilepath + ".code").unwrap());
+        let mut out_buf = BufWriter::new(fs::File::create(outfilepath).unwrap());
 
         let reader = BufReader::new(infile);
         for line in reader.lines() {
