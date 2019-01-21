@@ -39,8 +39,11 @@ impl Assembler {
     pub fn exec(&mut self, filepath: String) {
         let infilepath = filepath.to_string();
 
+        // 引数のパスから.asmファイルのリストを取得する
         let file_list = self.get_file_list(&infilepath);
+
         for asm_file_path in file_list {
+            // 入出力のパス
             let inpath = Path::new(&asm_file_path);
             let mut outfilepath = String::from(
                 inpath
@@ -59,6 +62,10 @@ impl Assembler {
         }
     }
 
+    ///
+    /// パスから.asmファイルのリストを取得する
+    /// ディレクトリの場合は配下のファイルのリストを返す
+    ///
     fn get_file_list(&self, inpath_str: &str) -> Vec<String> {
         let mut vec: Vec<String> = vec![];
         let inpath = Path::new(inpath_str);
