@@ -1,9 +1,7 @@
 use code::Code;
 use parser;
 use parser::Parser;
-use std::borrow::Cow;
 use std::fs;
-use std::fs::DirEntry;
 
 ///
 /// ## アセンブラ
@@ -12,7 +10,7 @@ use std::fs::DirEntry;
 /// dgkzoo
 ///
 use std::io::{BufRead, BufReader, BufWriter, Write};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::string::ToString;
 use symbol_table::SymbolTable;
 
