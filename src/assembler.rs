@@ -27,7 +27,8 @@ impl Assembler {
     /// シンボルテーブルを作成する
     ///
     fn create_symbol_tble(&self, _filepath: String) -> SymbolTable {
-        let st = SymbolTable::new();
+        let mut st = SymbolTable::new();
+        st.init();
         return st;
     }
 
@@ -55,8 +56,12 @@ impl Assembler {
             let st = self.create_symbol_tble(infilepath.to_string());
 
             // アセンブルの実行
-            //println!("assemble={} {}", asm_file_path.to_string(), outfilepath);
-            self.assemble(st, asm_file_path.to_string(), outfilepath);
+            self.assemble(st, asm_file_path.to_string(), outfilepath.to_string());
+            println!(
+                "assemble in:{} out:{}",
+                asm_file_path.to_string(),
+                outfilepath
+            );
         }
     }
 
