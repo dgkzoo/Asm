@@ -24,15 +24,6 @@ impl Assembler {
     }
 
     ///
-    /// シンボルテーブルを作成する
-    ///
-    fn create_symbol_tble(&self, _filepath: String) -> SymbolTable {
-        let mut st = SymbolTable::new();
-        st.init();
-        return st;
-    }
-
-    ///
     /// アセンブルの実行
     ///
     pub fn exec(&mut self, filepath: String) {
@@ -53,7 +44,7 @@ impl Assembler {
             outfilepath = outfilepath + ".code";
 
             // シンボルテーブルの作成
-            let st = self.create_symbol_tble(infilepath.to_string());
+            let st = self.create_symbol_tble(asm_file_path.to_string());
 
             // アセンブルの実行
             self.assemble(st, asm_file_path.to_string(), outfilepath.to_string());
@@ -63,6 +54,36 @@ impl Assembler {
                 outfilepath
             );
         }
+    }
+
+    ///
+    /// シンボルテーブルを作成する
+    ///
+    fn create_symbol_tble(&self, filepath: String) -> SymbolTable {
+        let mut st = SymbolTable::new();
+        st.init();
+        let parser = Parser::new();
+
+        let infile = fs::File::open(filepath.to_string()).unwrap();
+        let reader = BufReader::new(infile);
+        let mut rom_addr = 0;
+        for line in reader.lines() {
+            // コメント、空白行などを除去
+            let line = parser.get_valid_line(&mut line.unwrap());
+            if line.is_empty() {
+                continue;
+            }
+
+            if line.starts_with("(") {
+                let line = line.replace("(", "");
+                let line = line.replace("\\)", "");
+                st.add_entry(line, rom_addr);
+            } else {
+                rom_addr += 1;
+            }
+        }
+
+        return st;
     }
 
     ///
