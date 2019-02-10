@@ -1,0 +1,49 @@
+   @480   // VRAMクリア 縦480px
+   D=A
+   @counter
+   M=D
+   @SCREEN
+   D=A
+   @address
+   M=D
+(LOOP1)
+   @address
+   A=M
+   M=0
+   @address
+   D=M
+   @1
+   D=D+A
+   @address
+   M=D
+   @counter
+   MD=M-1
+   @LOOP1
+   D;JGT
+
+(MAIN)
+   @16   // MAIN 縦16px
+   D=A
+   @counter
+   M=D
+   @SCREEN
+   D=A
+   @address
+   M=D
+(LOOP2)
+   @address
+   A=M
+   M=-1
+   @address
+   D=M
+   @40   // 640 / 16
+   D=D+A
+   @address
+   M=D
+   @counter
+   MD=M-1
+   @LOOP2
+   D;JGT
+(INFINITE_LOOP)
+   @INFINITE_LOOP
+   0;JMP

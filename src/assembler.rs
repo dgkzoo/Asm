@@ -74,9 +74,10 @@ impl Assembler {
                 continue;
             }
 
+            println!("{}: line = {}", rom_addr, line);
             if line.starts_with("(") {
                 let line = line.replace("(", "");
-                let line = line.replace("\\)", "");
+                let line = line.replace(")", "");
                 st.add_entry(line, rom_addr);
             } else {
                 rom_addr += 1;
@@ -140,6 +141,7 @@ impl Assembler {
             let mut symbol: String = "".to_string();
             if command_type == parser::A_COMMAND || command_type == parser::L_COMMAND {
                 symbol = parser.get_symbol(line.to_string());
+                //println!("get_symbol line = {} -> {}", line, symbol);
             }
 
             let mut out_code = "".to_string();
@@ -162,6 +164,8 @@ impl Assembler {
                         self.ram_addr += 1;
                     }
                 }
+
+                //println!("A line = {} -> {}", line, address);
 
                 out_code = format!("{:0>16b} //{}\n", address, line.to_string());
             }

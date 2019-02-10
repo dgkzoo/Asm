@@ -5,6 +5,7 @@
 /// dgkzoo
 ///
 use std::env;
+
 extern crate asm;
 use asm::assembler::Assembler;
 
@@ -18,7 +19,6 @@ fn main() {
     // asmファイル
     let args: Vec<String> = env::args().collect();
     let filepath = &args[1];
-    //    let filepath = "./test/counter/counter.asm";
     println!("filepath = {}", filepath);
 
     // アセンブル

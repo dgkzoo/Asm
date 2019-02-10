@@ -6,6 +6,8 @@
 ///
 // use std::fs;
 // use std::io::{Read, BufReader, BufRead};
+use regex::Regex;
+
 pub const A_COMMAND: &str = "A";
 pub const C_COMMAND: &str = "C";
 pub const L_COMMAND: &str = "L";
@@ -68,7 +70,8 @@ impl Parser {
             return line.replace("@", "");
         }
         if line.contains("(") {
-            return line.replace("(|)", "");
+            let re = Regex::new(r"\(|\)").unwrap();
+            return String::from(re.replace_all(&line, ""));
         }
 
         return line;
