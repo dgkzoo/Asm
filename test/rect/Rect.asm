@@ -1,5 +1,4 @@
-//   @16   // MAIN 縦16px
-   @512   // MAIN 縦
+   @20   // MAIN 縦
    D=A
    @counter_v
    M=D
@@ -15,7 +14,6 @@
    M=D
 (LOOP_H)
 
-//   @65535  // 白
    @7  // 色
    D=A
    @address
@@ -33,11 +31,6 @@
    MD=M-1
    @LOOP_H
    D;JGT
-
-//   @624  // 640 - 16(LOOP_H) 
-//   D=D+A
-//   @address
-//   M=D
    
    @counter_v
    MD=M-1
